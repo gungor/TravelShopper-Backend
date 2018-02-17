@@ -1,38 +1,39 @@
 var ObjectID = require('mongodb').ObjectID
+var redis = require('redis')
+var client = redis.createClient('14812', 'redis-14812.c10.us-east-1-4.ec2.cloud.redislabs.com', {no_ready_check: true})
 
+const {promisify} = require('util');
+const getAsync = promisify(client.get).bind(client);
 
 module.exports = {
 
-    getCache: (client, key ) => {
 
-        return new Promise( (resolve, reject) => {
-            console.log("getCache : "+ key)
-            client.get(  key,  function(reply){
-                console.log('json get')
-                console.log( reply )
-                resolve( JSON.parse( reply )  );
-            });
-        })
 
+    getCache: ( key , val ) => {
+        return getAsync(key).then(function(res) {
+            return res
+        });
     },
 
-    setCache: (client, key, value) => {
+    setCache: ( key, value) => {
 
-        value = JSON.stringify( value , null, 3);
+        console.log( "key: "+ key + "value" + JSON.stringify(value))
 
-        return new Promise( (resolve, reject) => {
-            client.set(key, value  ,function(err){
-                if( err )
-                    reject(err);
+
+            client.set(key, JSON.stringify(value) ,function(err){
+                if( err ) {
+                    console.log("setCache error: "+ err.message)
+
+                }
                 console.log('cache set success '+value)
-                resolve( value );
+
             });
-        })
+
 
 
     },
 
-    deleteCache: (client, key, successCallback, errorCallback) => {
+    deleteCache: ( key, successCallback, errorCallback) => {
 
         return new Promise( (resolve, reject) => {
             console.log("deleteCache : "+ key )

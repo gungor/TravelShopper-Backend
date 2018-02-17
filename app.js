@@ -11,16 +11,11 @@ const redisPort = properties.get('redisport')
 
 var dbOperations = require('./db');
 var cache = require('./cache');
-var util = require('./util');
+var util = require('./utility');
 var resps = require('./response')
-
-var redis = require('redis')
-
-var client = redis.createClient(redisPort, redisUrl, {no_ready_check: true});
 
 var connection = require('./dbconnection');
 app.use(connection(app, mongourl, {}))
-
 
 
 app.use(function(req, res, next) {
@@ -52,33 +47,36 @@ app.post('/createTrip', (request, response) => {
 app.post('/getCountries', (request, response) => {
     var cacheResult;
 
-    cache.getCache( client, "countries")
-        .then( (result) => {
-                console.log('promise 2 '+ result)
-                cacheResult = result;
-                if(result == null){
-                    console.log(" cacheResult == null ")
-                    return dbOperations.queryCountries(app)
-                }
+    cacheResult = cache.getCache("countries")
+    cacheResult.then(
+        function (result) {
+            console.log(result)
+            if (result == null) {
+                dbOperations.queryCountries(app).then(
+                    res => {
+                        if (result == null) {
+                            console.log(res)
+                            cacheResult = res
+                            cache.setCache('countries', cacheResult)
+                            console.log(" cash set ")
+                            console.log(" return cacheResult ")
+                            resps.sendQueryCountriesSuccessResponse(response, cacheResult);
+                        } else {
+                            console.log(" cacheResult not null ")
+                        }
+                    }
+                )
+            }else{
+                console.log('retrieving from redis')
+                result = JSON.parse(result)
+                resps.sendQueryCountriesSuccessResponse(response, result);
             }
-        ).then(
-            res => {
-                console.log(" callback 1 ")
-                if(cacheResult == null){
-                    console.log( res )
-                    cacheResult = res
-                    return cache.setCache(client,"countries",res )
-                }else{
-                    console.log(" cacheResult not null " )
-                }
-            }
-        ).then(
-            res => {
-                console.log(" cash set ")
-                console.log(" return cacheResult ")
-                resps.sendQueryCountriesSuccessResponse(response,cacheResult);
-            }
-        )
+        }
+    )
+
+
+
+
 
 
 })
@@ -178,7 +176,7 @@ app.post('/createOrder', (request, response) => {
 })
 
 app.post('/deleteKeys', (request,response) => {
-    cache.deleteCache( client, "countries")
+    cache.deleteCache(  "countries")
         .then( result => {
             resps.sendCreateTripSuccessResponse(response);
         }, error => {
