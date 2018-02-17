@@ -31,16 +31,7 @@ require('./routes/trip')(app,cache,responses,tripService,util);
 require('./routes/preorder')(app,cache,responses,preorderService,util);
 require('./routes/order')(app,cache,responses,orderService,util);
 
-console.log('app starting');
-
-app.post('/deleteKeys', (request,response) => {
-    cache.deleteCache(  "countries")
-        .then( result => {
-            responses.sendCreateTripSuccessResponse(response)
-        }, error => {
-            responses.generalError(error,response)
-        } )
-});
+console.log('app starting')
 
 app.listen(port, (err) => {
     if (err) {

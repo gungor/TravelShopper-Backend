@@ -1,4 +1,3 @@
-var ObjectID = require('mongodb').ObjectID;
 var redis = require('redis');
 
 const {promisify} = require('util');
@@ -13,7 +12,7 @@ module.exports = function (properties) {
     const getAsync = promisify(client.get).bind(client);
 
     return {
-        getCache: (key, val) => {
+        getCache: (key) => {
             return getAsync(key).then(function (res) {
                 return res
             })
@@ -30,18 +29,6 @@ module.exports = function (properties) {
 
             })
 
-        },
-
-        deleteCache: (key, successCallback, errorCallback) => {
-
-            return new Promise((resolve, reject) => {
-                console.log("deleteCache : " + key);
-                client.del(key, function (err, reply) {
-                    if (err)
-                        reject(err);
-                    resolve()
-                })
-            })
         }
     }
 };

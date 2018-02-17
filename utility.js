@@ -1,6 +1,3 @@
-var isodate = require("isodate");
-var dateFormat = require('dateformat');
-
 module.exports = {
 
     prepareRequestData: (requestData) => {
