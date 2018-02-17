@@ -9,9 +9,11 @@ const port = properties.get('port')
 
 var dbOperations = require('./db');
 var util = require('./util');
+var resps = require('./response');
 
 var connection = require('./dbconnection');
 app.use(connection(app, mongourl, {}))
+
 app.use(function(req, res, next) {
     res.setHeader('Content-Type', 'application/json');
     next();
@@ -22,48 +24,60 @@ console.log('app starting')
 app.post('/createTrip', (request, response) => {
     var getJSONDataPromise = util.getJSONData(request);
     getJSONDataPromise.then(
-        function (res) {
+         (res) => {
             dbOperations.insertTrip(app,
                 (result) => {
-                    response.send(JSON.stringify( {code: "0" , msg : "Success" } , null, 3));
+                    resps.sendCreateTripSuccessResponse(response);
                 },
                 (err) => {
-                    response.send(JSON.stringify( {code: "-1" , msg : "Error" } , null, 3));
+                    resps.sendDbErrorResponse(response);
                 }
                 , util.prepareRequestData(res));
         }
-        ,function(err) {
-            response.send(JSON.stringify( {code: "-4" , msg : err.message } , null, 3));
+        , (err) => {
+            generalError(error,response);
         }
-    )
+    ).catch( error => { generalError(error,response); });
 })
 
 app.post('/getCountries', (request, response) => {
-    dbOperations.queryCountries(app,
+    var promise = util.createSimplePromise()
+
+    promise.then(
+        (res) => {
+            dbOperations.queryCountries(app,
                 (result) => {
-                    response.send(JSON.stringify( {code: "0" , msg : "Success", countries: result} , null, 3));
+                    resps.sendQueryCountriesSuccessResponse(response);
                 },
                 (err) => {
-                    response.send(JSON.stringify( {code: "-1" , msg : "Error" } , null, 3));
+                    resps.sendDbErrorResponse(response);
                 })
+        },
+        ( err ) => {
+            generalError(error,response);
+        }
+    ).catch( error => { generalError(error,response); });
+
 })
 
 app.post('/searchTrips', (request, response) => {
     var getJSONDataPromise = util.getJSONData(request);
     getJSONDataPromise.then(
-        function (res) {
+        (res) => {
             dbOperations.queryTrips(app,
-                (result) => {response.send(JSON.stringify( {code: "0" , msg : "Success", trips: result} , null, 3));},
-                (err) => {response.send(JSON.stringify( {code: "-1" , msg : "Error" } , null, 3));},
+                (result) => {
+                    resps.sendQueryTripsSuccessResponse(response,result);
+                },
+                (err) => {
+                    resps.sendDbErrorResponse(response);
+                },
                 res )
-
         }
-        ,function(err) {
-            response.send(JSON.stringify( {code: "-4" , msg : err.message } , null, 3));
+        ,(err) => {
+            generalError(error,response);
         }
-    )
+    ).catch( error => { generalError(error,response); });
 })
-
 
 app.listen(port, (err) => {
     if (err) {
@@ -72,6 +86,5 @@ app.listen(port, (err) => {
 
     console.log(`server is listening on ${port}`)
 })
-
 
 module.exports = app;

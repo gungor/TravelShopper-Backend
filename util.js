@@ -27,7 +27,18 @@ module.exports = {
                 resolve(requestData);
             })
         })
+    },
+
+    createSimplePromise : () => {
+        return new Promise(function(resolve, reject) {
+            try {
+                resolve();
+            }catch(err) {
+                reject(err);
+            }
+        })
     }
+
 }
 
 

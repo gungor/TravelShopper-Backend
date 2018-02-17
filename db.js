@@ -1,8 +1,14 @@
+var ObjectID = require('mongodb').ObjectID
+
 module.exports = {
 
     insertTrip: (app,successCallback, errorCallback, parameters) => {
         console.log("insertTrip is called")
-        var trip = {startDate: parameters.startDate, endDate: parameters.endDate, capacity: parameters.capacity, country: parameters.country };
+        var trip = {startDate: parameters.startDate,
+                    endDate: parameters.endDate,
+                    capacity: parameters.capacity,
+                    country: parameters.country,
+                    user_id : new ObjectID(parameters.userId)  };
         app.get('mongodb').db("packcarrydrive").collection("trip").insert(trip, {w: 1}, function(err, records){
             if( err )
                 errorCallback(err);
@@ -36,5 +42,11 @@ module.exports = {
             }
             successCallback(result);
         });
+    },
+
+    insertPreorder : (app,successCallback, errorCallback, parameters) => {
+
     }
+
+
 }
