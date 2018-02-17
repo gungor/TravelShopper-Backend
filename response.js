@@ -3,11 +3,11 @@ module.exports = {
         response.send(JSON.stringify( {code: "-4" , msg : error.message } , null, 3));
     },
 
-    returnParseError: (response) => {
+    returnParseError: response => {
         response.send(JSON.stringify({code: "-3", message: "Json parse error"}, null, 3));
     },
 
-    sendCreateTripSuccessResponse : (response) => {
+    sendCreateTripSuccessResponse : response => {
         response.send(JSON.stringify( {code: "0" , msg : "Success" } , null, 3));
     },
 
@@ -21,7 +21,21 @@ module.exports = {
 
     sendQueryTripsSuccessResponse : (response,result) => {
         response.send(JSON.stringify( {code: "0" , msg : "Success", trips: result} , null, 3))
-    }
+    },
+
+    sendInsertPreorderSuccessResponse : response => {
+        response.send(JSON.stringify( {code: "0" , msg : "Success" } , null, 3));
+    },
+
+    sendQueryPreordersSuccessResponse: (response,result) => {
+        response.send(JSON.stringify( {code: "0" , msg : "Success", preorders: result} , null, 3))
+    },
+
+    sendInsertOrderSuccessResponse:  response => {
+        response.send(JSON.stringify( {code: "0" , msg : "Success" } , null, 3));
+    },
+
+
 }
 
 

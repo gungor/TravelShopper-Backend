@@ -9,10 +9,6 @@ module.exports = {
         return requestData;
     },
 
-    returnParseError: (response) => {
-        response.send(JSON.stringify({code: "-3", message: "Json parse error"}, null, 3));
-    },
-
     getJSONData : (request) => {
 
         return new Promise(function(resolve, reject) {
@@ -23,7 +19,11 @@ module.exports = {
             }).on('data', (chunk) => {
                 requestData.push(chunk);
             }).on('end', () => {
-                requestData = JSON.parse(Buffer.concat(requestData).toString());
+                try {
+                    requestData = JSON.parse(Buffer.concat(requestData).toString());
+                }catch(err){
+                    reject(err);
+                }
                 resolve(requestData);
             })
         })
