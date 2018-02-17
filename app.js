@@ -45,40 +45,30 @@ app.post('/createTrip', (request, response) => {
 })
 
 app.post('/getCountries', (request, response) => {
-    var cacheResult;
+    var countries;
 
     cacheResult = cache.getCache("countries")
     cacheResult.then(
         function (result) {
             console.log(result)
-            if (result == null) {
-                dbOperations.queryCountries(app).then(
-                    res => {
-                        if (result == null) {
-                            console.log(res)
-                            cacheResult = res
-                            cache.setCache('countries', cacheResult)
-                            console.log(" cash set ")
-                            console.log(" return cacheResult ")
-                            resps.sendQueryCountriesSuccessResponse(response, cacheResult);
-                        } else {
-                            console.log(" cacheResult not null ")
-                        }
-                    }
-                )
+            countries = result
+            if (countries == null) {
+                return dbOperations.queryCountries(app)
             }else{
                 console.log('retrieving from redis')
-                result = JSON.parse(result)
-                resps.sendQueryCountriesSuccessResponse(response, result);
+                countries = JSON.parse(countries)
+                resps.sendQueryCountriesSuccessResponse(response, countries);
+            }
+        }
+    ).then(
+        res => {
+            if (countries == null) {
+                countries = res
+                cache.setCache('countries', countries)
+                resps.sendQueryCountriesSuccessResponse(response, countries);
             }
         }
     )
-
-
-
-
-
-
 })
 
 app.post('/searchTrips', (request, response) => {
