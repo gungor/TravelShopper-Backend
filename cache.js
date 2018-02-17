@@ -1,6 +1,12 @@
 var ObjectID = require('mongodb').ObjectID
 var redis = require('redis')
-var client = redis.createClient('14812', 'redis-14812.c10.us-east-1-4.ec2.cloud.redislabs.com', {no_ready_check: true})
+
+var PropertiesReader = require('properties-reader');
+var properties = PropertiesReader('./conf/app.properties');
+const redisUrl = properties.get('redisurl')
+const redisPort = properties.get('redisport')
+
+var client = redis.createClient( redisPort, redisUrl, {no_ready_check: true})
 
 const {promisify} = require('util');
 const getAsync = promisify(client.get).bind(client);

@@ -31,9 +31,14 @@ module.exports = {
         response.send(JSON.stringify( {code: "0" , msg : "Success", preorders: result} , null, 3))
     },
 
-    sendInsertOrderSuccessResponse:  response => {
+    sendCreateOrderSuccessResponse:  response => {
         response.send(JSON.stringify( {code: "0" , msg : "Success" } , null, 3));
     },
+
+    sendOrderSuccessResponse:  (response,result) => {
+        response.send(JSON.stringify( {code: "0" , msg : "Success", orders: result } , null, 3));
+    }
+
 
 
 }

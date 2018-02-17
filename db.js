@@ -86,29 +86,9 @@ module.exports = {
                 errorCallback();
             }
             successCallback(result);
-        });
-    },
-
-    createOrder : (app,successCallback, errorCallback, parameters) => {
-        console.log("createOrder is called");
-
-        var order = {
-            startDate: parameters.startDate,
-            endDate: parameters.endDate,
-            capacity: parameters.capacity,
-            country: parameters.country,
-            item_id: new ObjectID(parameters.itemId),
-            customer_id : new ObjectID(parameters.customerUserId),
-            carrier_id : new ObjectID(parameters.carrierUserId),
-            status: "OPEN"
-        };
-
-        app.get('mongodb').db("packcarrydrive").collection("order").insert(order, {w: 1}, function(err, records){
-            if( err )
-                errorCallback(err);
-            successCallback();
-        });
+        })
     }
+
 
 
 }
