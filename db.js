@@ -1,48 +1,40 @@
-var isodate = require("isodate");
-var dateFormat = require('dateformat');
-
 module.exports = {
 
-    prepareRequestData: (requestData) => {
-        requestData.endDate = requestData.endDate + "T00:00:00.000Z"
-        requestData.startDate = requestData.startDate + "T00:00:00.000Z"
-        return requestData;
-    },
-
     insertTrip: (app,successCallback, errorCallback, parameters) => {
-
-        console.log("insertTrip is called");
-
-        var mongoDb = app.get('mongodb');
-        var dbo = mongoDb.db("packcarrydrive");
-
+        console.log("insertTrip is called")
         var trip = {startDate: parameters.startDate, endDate: parameters.endDate, capacity: parameters.capacity, country: parameters.country };
-
-        dbo.collection("trip").insert(trip, {w: 1}, function(err, records){
+        app.get('mongodb').db("packcarrydrive").collection("trip").insert(trip, {w: 1}, function(err, records){
             if( err )
                 errorCallback(err);
             successCallback();
         });
     },
 
-    queryCountries: (app,successCallback, errorCallback, parameters) => {
+    queryTrips: (app,successCallback, errorCallback, parameters) => {
+        console.log("queryTrips is called " + parameters.startDate +","+ parameters.endDate )
+        app.get('mongodb').db("packcarrydrive").collection("trip").find(
+            {
+                country: { $in: parameters.countries }
+                ,startDate: { $lt:  new Date(parameters.endDate + "T00:00:00.000Z") }
+                ,endDate : {  $gte :  new Date(parameters.startDate + "T00:00:00.000Z") }
+                ,capacity: { $gte : parameters.capacity }
+            }
 
-        console.log("queryCountries is called");
-
-        var mongoDb = app.get('mongodb');
-        var dbo = mongoDb.db("packcarrydrive");
-
-        dbo.collection("country").find({}).toArray(function (err, result) {
+            ).toArray(function (err, result) {
             if (err) {
                 errorCallback();
             }
             successCallback(result);
         });
-
     },
 
-
-    returnParseError: (response) => {
-        response.send(JSON.stringify({code: "-3", message: "Json parse error"}, null, 3));
+    queryCountries: (app,successCallback, errorCallback) => {
+        console.log("queryCountries is called");
+        app.get('mongodb').db("packcarrydrive").collection("country").find({}).toArray(function (err, result) {
+            if (err) {
+                errorCallback();
+            }
+            successCallback(result);
+        });
     }
 }

@@ -8,64 +8,60 @@ const mongourl = properties.get('mongodburl')
 const port = properties.get('port')
 
 var dbOperations = require('./db');
+var util = require('./util');
 
 var connection = require('./dbconnection');
 app.use(connection(app, mongourl, {}))
+app.use(function(req, res, next) {
+    res.setHeader('Content-Type', 'application/json');
+    next();
+});
 
 console.log('app starting')
 
 app.post('/createTrip', (request, response) => {
-    let requestData = [];
-
-    response.setHeader('Content-Type', 'application/json');
-
-    request.on('error', (err) => {
-        response.send(JSON.stringify( {code: "-4" , msg : err.message } , null, 3));
-    }).on('data', (chunk) => {
-        requestData.push(chunk);
-    }).on('end', () => {
-        requestData = JSON.parse(Buffer.concat(requestData).toString());
-
-        try {
+    var getJSONDataPromise = util.getJSONData(request);
+    getJSONDataPromise.then(
+        function (res) {
             dbOperations.insertTrip(app,
-                () => {
+                (result) => {
                     response.send(JSON.stringify( {code: "0" , msg : "Success" } , null, 3));
                 },
                 (err) => {
                     response.send(JSON.stringify( {code: "-1" , msg : "Error" } , null, 3));
                 }
-                , dbOperations.prepareRequestData(requestData));
-        }catch(err){
-            response.send(JSON.stringify( {code: "-2" , msg : err.message } , null, 3));
+                , util.prepareRequestData(res));
         }
-    })
-
+        ,function(err) {
+            response.send(JSON.stringify( {code: "-4" , msg : err.message } , null, 3));
+        }
+    )
 })
 
-app.post('/createTrip', (request, response) => {
-    let requestData = [];
-    response.setHeader('Content-Type', 'application/json');
-    request.on('error', (err) => {
-        response.send(JSON.stringify( {code: "-4" , msg : err.message } , null, 3));
-    }).on('data', (chunk) => {
-        requestData.push(chunk);
-    }).on('end', () => {
-        requestData = JSON.parse(Buffer.concat(requestData).toString());
-
-        try {
-            dbOperations.queryCountries(app,
+app.post('/getCountries', (request, response) => {
+    dbOperations.queryCountries(app,
                 (result) => {
                     response.send(JSON.stringify( {code: "0" , msg : "Success", countries: result} , null, 3));
                 },
                 (err) => {
                     response.send(JSON.stringify( {code: "-1" , msg : "Error" } , null, 3));
-                }
-                , dbOperations.prepareRequestData(requestData));
-        }catch(err){
-            response.send(JSON.stringify( {code: "-2" , msg : err.message } , null, 3));
-        }
-    })
+                })
+})
 
+app.post('/searchTrips', (request, response) => {
+    var getJSONDataPromise = util.getJSONData(request);
+    getJSONDataPromise.then(
+        function (res) {
+            dbOperations.queryTrips(app,
+                (result) => {response.send(JSON.stringify( {code: "0" , msg : "Success", trips: result} , null, 3));},
+                (err) => {response.send(JSON.stringify( {code: "-1" , msg : "Error" } , null, 3));},
+                res )
+
+        }
+        ,function(err) {
+            response.send(JSON.stringify( {code: "-4" , msg : err.message } , null, 3));
+        }
+    )
 })
 
 

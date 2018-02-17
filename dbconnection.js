@@ -18,7 +18,6 @@ module.exports = function(app, uri, opts) {
             .then(function (db) {
                 req[property] = db;
                 app.set('mongodb', db);
-                console.log('mongodb connected');
                 next();
             })
             .catch(function (err) {
