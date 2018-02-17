@@ -1,40 +1,50 @@
-module.exports = function (app, cache, responses, dbOperations, util) {
+module.exports = function (app, cache, responses, preorderService, util) {
 
+    //customer creates preorder (a request existing in db, but no carrier linked to that order), by specifying country and product (item)
     app.post('/createPreorder', (request, response) => {
         var getJSONDataPromise = util.getJSONData(request);
         getJSONDataPromise.then(
             (res) => {
-                dbOperations.insertPreorder(app,
-                    (result) => {
-                        responses.sendInsertPreorderSuccessResponse(response);
-                    },
-                    (err) => {
-                        responses.sendDbErrorResponse(response);
-                    }
-                    , util.prepareRequestData(res));
+                return preorderService.insertPreorder(app, util.prepareRequestData(res))
             }
             , (err) => {
-                responses.generalError(error,response);
+                throw err
             }
-        ).catch( error => { responses.generalError(error,response); });
-    })
+        )
+        .then(
+            () => {
+                responses.sendInsertPreorderSuccessResponse(response)
+            }
+        ).catch( error => { responses.generalError(error,response) })
+    });
 
+    //all preorders (requests existing in db, but no carrier linked to that order) can be retrieved by this service
     app.post('/queryPreorders', (request, response) => {
-        var promise = util.createSimplePromise()
+        var promise = preorderService.queryPreorders(app);
         promise.then(
+            (result) => {
+                responses.sendQueryPreordersSuccessResponse(response,result)
+            }
+        ).catch( error => { responses.generalError(error,response) })
+    });
+
+    //customer searches her preorders
+    app.post('/queryPreordersByCustomer', (request, response) => {
+        var getJSONDataPromise = util.getJSONData(request);
+        getJSONDataPromise.then(
             (res) => {
-                dbOperations.queryPreorders(app,
-                    (result) => {
-                        responses.sendQueryPreordersSuccessResponse(response,result);
-                    },
-                    (err) => {
-                        responses.sendDbErrorResponse(response);
-                    });
+                return preorderService.queryPreordersByCustomer(app,res)
             }
             , (err) => {
-                responses.generalError(err,response);
+                throw err
             }
-        ).catch( error => { responses.generalError(error,response); });
+        )
+        .then(
+            (result) => {
+                responses.sendQueryPreordersSuccessResponse(response,result)
+            }
+        )
+        .catch( error => { responses.generalError(error,response) })
     })
 
-}
+};
