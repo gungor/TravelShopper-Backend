@@ -1,6 +1,6 @@
 # Yurtdışından Sipariş İsteme REST Servisleri
 
-Takım: Güngör Yılmaz, Berhan
+Takım: Güngör Yılmaz
 
 ## Amaç
 
