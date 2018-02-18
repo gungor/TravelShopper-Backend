@@ -1,21 +1,21 @@
-var ObjectID = require('mongodb').ObjectID;
+var ObjectID = require('mongodb').ObjectID
 
 module.exports = function (app) {
 
     return{
         insertPreorder : (app,parameters) => {
             return new Promise(function(resolve, reject) {
-                console.log("insertPreorder is called");
+                console.log("insertPreorder is called")
                 var preOrder = {startDate: parameters.startDate,
                     endDate: parameters.endDate,
                     capacity: parameters.capacity,
                     country: parameters.country,
                     item_id: new ObjectID(parameters.itemId),
                     user_id : new ObjectID(parameters.userId)
-                };
+                }
                 app.get('mongodb').db("packcarrydrive").collection("preorder").insert(preOrder, {w: 1}, function(err, records){
                     if( err )
-                        reject(err);
+                        reject(err)
                     resolve()
                 })
             })
@@ -23,7 +23,7 @@ module.exports = function (app) {
 
         queryPreorders : (app) => {
             return new Promise(function(resolve, reject) {
-                console.log("queryPreorders is called");
+                console.log("queryPreorders is called")
 
                 app.get('mongodb').db("packcarrydrive").collection("preorder").aggregate(
                     [
@@ -52,7 +52,7 @@ module.exports = function (app) {
         queryPreordersByCustomer : (app, parameters) => {
             return new Promise(function(resolve, reject) {
 
-                console.log("queryPreordersByCustomer is called");
+                console.log("queryPreordersByCustomer is called")
 
                 app.get('mongodb').db("packcarrydrive").collection("preorder").aggregate(
                     [
@@ -77,7 +77,7 @@ module.exports = function (app) {
                     ]
                 ).toArray(function (err, result) {
                     if (err) {
-                        console.log(err.message);
+                        console.log(err.message)
                         reject(err)
                     }
                     resolve(result)
@@ -86,5 +86,5 @@ module.exports = function (app) {
         }
     }
 
-};
+}
 

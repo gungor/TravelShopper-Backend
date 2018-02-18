@@ -2,7 +2,7 @@ module.exports = function (app, cache, responses, tripService, util) {
 
     //a possible carrier, records his trip information by this service
     app.post('/createTrip', (request, response) => {
-        var getJSONDataPromise = util.getJSONData(request);
+        var getJSONDataPromise = util.getJSONData(request)
         getJSONDataPromise.then(
             (res) => {
                 return tripService.insertTrip(app, util.prepareRequestData(res))
@@ -10,8 +10,7 @@ module.exports = function (app, cache, responses, tripService, util) {
             , (err) => {
                 throw err
             }
-        )
-        .then(
+        ).then(
             () => {
                 responses.sendCreateTripSuccessResponse(response)
             }
@@ -22,10 +21,10 @@ module.exports = function (app, cache, responses, tripService, util) {
 
     //all users (customers and carriers) can query all trips by time and country criteria
     app.post('/searchTrips', (request, response) => {
-        var getJSONDataPromise = util.getJSONData(request);
+        var getJSONDataPromise = util.getJSONData(request)
         getJSONDataPromise.then(
             (res) => {
-                return tripService.queryTrips(app,res)
+                return tripService.queryTrips(app, res)
             }
             , (err) => {
                 throw err
@@ -38,4 +37,4 @@ module.exports = function (app, cache, responses, tripService, util) {
             responses.generalError(error, response)
         })
     })
-};
+}

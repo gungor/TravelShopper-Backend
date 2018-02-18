@@ -1,14 +1,14 @@
-var MongoClient = require('mongodb').MongoClient;
+var MongoClient = require('mongodb').MongoClient
 
-module.exports = function(app, uri, opts) {
+module.exports = function (app, uri, opts) {
     if (typeof uri !== 'string') {
         throw new TypeError('Error: Unexpected mongodb connection url')
     }
 
-    opts = opts || {};
-    var property = opts.property || 'db';
+    opts = opts || {}
+    var property = opts.property || 'db'
 
-    var connection;
+    var connection
     return function expressMongoDb(req, res, next) {
         if (!connection) {
             connection = MongoClient.connect(uri, opts)
@@ -16,14 +16,14 @@ module.exports = function(app, uri, opts) {
 
         connection
             .then(function (db) {
-                req[property] = db;
-                app.set('mongodb', db);
+                req[property] = db
+                app.set('mongodb', db)
                 next()
             })
             .catch(function (err) {
-                console.log('mongodb connection error');
-                connection = undefined;
+                console.log('mongodb connection error')
+                connection = undefined
                 next(err)
             })
     }
-};
+}

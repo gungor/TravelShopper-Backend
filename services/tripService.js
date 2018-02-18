@@ -1,4 +1,4 @@
-var ObjectID = require('mongodb').ObjectID;
+var ObjectID = require('mongodb').ObjectID
 
 module.exports = function (app) {
 
@@ -6,15 +6,15 @@ module.exports = function (app) {
 
         insertTrip: (app, parameters) => {
             return new Promise(function(resolve, reject) {
-                console.log("insertTrip is called");
+                console.log("insertTrip is called")
                 var trip = {startDate: parameters.startDate,
                     endDate: parameters.endDate,
                     capacity: parameters.capacity,
                     country: parameters.country,
-                    user_id : new ObjectID(parameters.userId)  };
+                    user_id : new ObjectID(parameters.userId)  }
                 app.get('mongodb').db("packcarrydrive").collection("trip").insert(trip, {w: 1}, function(err, records){
                     if( err )
-                        reject(err);
+                        reject(err)
                     resolve()
                 })
             })
@@ -22,7 +22,7 @@ module.exports = function (app) {
 
         queryTrips: (app, parameters) => {
             return new Promise(function(resolve, reject) {
-                console.log("queryTrips is called " + parameters.startDate +","+ parameters.endDate );
+                console.log("queryTrips is called " + parameters.startDate +","+ parameters.endDate )
                 app.get('mongodb').db("packcarrydrive").collection("trip").find(
                     {
                         country: { $in: parameters.countries }
@@ -42,5 +42,5 @@ module.exports = function (app) {
 
     }
 
-};
+}
 

@@ -29,11 +29,19 @@ module.exports = {
 
     sendOrderSuccessResponse:  (response,result) => {
         response.send(JSON.stringify( {code: "0" , msg : "Success", orders: result } , null, 3))
+    },
+
+    sendCreateUserSuccessResponse: response => {
+        response.send(JSON.stringify( {code: "0" , msg : "Success"} , null, 3))
+    },
+
+    sendCreateItemSuccessResponse: response => {
+        response.send(JSON.stringify( {code: "0" , msg : "Success"} , null, 3))
     }
 
 
 
-};
+}
 
 
 

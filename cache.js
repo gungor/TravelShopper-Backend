@@ -1,15 +1,15 @@
-var redis = require('redis');
+var redis = require('redis')
 
-const {promisify} = require('util');
+const {promisify} = require('util')
 
 module.exports = function (properties) {
 
-    console.log('cache.js module exports');
-    const redisUrl = properties.get('redisurl');
-    const redisPort = properties.get('redisport');
+    console.log('cache.js module exports')
+    const redisUrl = properties.get('redisurl')
+    const redisPort = properties.get('redisport')
 
-    var client = redis.createClient(redisPort, redisUrl, {no_ready_check: true});
-    const getAsync = promisify(client.get).bind(client);
+    var client = redis.createClient(redisPort, redisUrl, {no_ready_check: true})
+    const getAsync = promisify(client.get).bind(client)
 
     return {
         getCache: (key) => {
@@ -31,4 +31,4 @@ module.exports = function (properties) {
 
         }
     }
-};
+}

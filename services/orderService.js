@@ -1,11 +1,11 @@
-var ObjectID = require('mongodb').ObjectID;
+var ObjectID = require('mongodb').ObjectID
 
 module.exports = function (app) {
 
     return{
         createOrder : (app,parameters) => {
             return new Promise(function(resolve, reject) {
-                console.log("createOrder is called");
+                console.log("createOrder is called")
 
                 var order = {
                     startDate: parameters.startDate,
@@ -16,11 +16,11 @@ module.exports = function (app) {
                     customer_id : new ObjectID(parameters.customerId),
                     carrier_id : new ObjectID(parameters.carrierId),
                     status: "OPEN"
-                };
+                }
 
                 app.get('mongodb').db("packcarrydrive").collection("order").insert(order, {w: 1}, function(err, records){
                     if( err )
-                        reject(err);
+                        reject(err)
                     resolve()
                 })
             })
@@ -28,7 +28,7 @@ module.exports = function (app) {
 
         closeOrder : (app, parameters) => {
             return new Promise(function(resolve, reject) {
-                console.log("closeOrder is called");
+                console.log("closeOrder is called")
 
                 app.get('mongodb').db("packcarrydrive").collection("order").update(
                     {
@@ -39,7 +39,7 @@ module.exports = function (app) {
                     },
                     function (err, records) {
                         if (err)
-                            reject(err);
+                            reject(err)
                         resolve()
                     })
             })
@@ -47,7 +47,7 @@ module.exports = function (app) {
 
         queryOrderByCustomer  : (app,parameters) => {
             return new Promise(function(resolve, reject) {
-                console.log("queryOrderByCustomer is called");
+                console.log("queryOrderByCustomer is called")
 
                 app.get('mongodb').db("packcarrydrive").collection("order").aggregate(
                     [
@@ -80,7 +80,7 @@ module.exports = function (app) {
                     ]
                 ).toArray(function (err, result) {
                     if (err) {
-                        console.log(err.message);
+                        console.log(err.message)
                         reject(err)
                     }
                     resolve(result)
@@ -90,7 +90,7 @@ module.exports = function (app) {
 
         queryOrderByCarrier  : (app, parameters) => {
             return new Promise(function(resolve, reject) {
-                console.log("queryOrderByCarrier is called");
+                console.log("queryOrderByCarrier is called")
 
                 app.get('mongodb').db("packcarrydrive").collection("order").aggregate(
                     [
@@ -131,7 +131,7 @@ module.exports = function (app) {
                     ]
                 ).toArray(function (err, result) {
                     if (err) {
-                        console.log(err.message);
+                        console.log(err.message)
                         reject(err)
                     }
                     resolve(result)
@@ -140,5 +140,5 @@ module.exports = function (app) {
         }
     }
 
-};
+}
 
