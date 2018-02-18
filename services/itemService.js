@@ -11,7 +11,7 @@ module.exports = function (app) {
                     name : parameters.itemName,
                     price: parameters.price,
                     currency: parameters.currency,
-                    country : new ObjectID(parameters.countryId)
+                    country_id : new ObjectID(parameters.countryId)
                 }
 
                 app.get('mongodb').db("packcarrydrive").collection("item").insert(item, {w: 1}, function(err, records){
@@ -20,7 +20,62 @@ module.exports = function (app) {
                     resolve()
                 })
             })
-        }
+        },
+
+        queryItems  : (app,parameters) => {
+            return new Promise(function(resolve, reject) {
+                console.log("queryItems is called")
+
+                app.get('mongodb').db("packcarrydrive").collection("item").aggregate(
+                    [
+                        {
+                            $lookup:
+                                {
+                                    from: "country",localField: "country_id",foreignField: "_id",as: "countries"
+                                }
+                        }
+                    ]
+                ).toArray(function (err, result) {
+                    if (err) {
+                        console.log(err.message)
+                        reject(err)
+                    }
+                    resolve(result)
+                })
+            })
+        },
+
+        queryItemsByCountry  : (app,parameters) => {
+            return new Promise(function(resolve, reject) {
+                console.log("queryItemsByCountry is called")
+
+                app.get('mongodb').db("packcarrydrive").collection("item").aggregate(
+                    [
+                        {
+                            $match:
+                                {
+                                    country_id : new ObjectID(parameters.countryId)
+                                }
+
+                        },
+                        {
+                            $lookup:
+                                {
+                                    from: "country",localField: "country_id",foreignField: "_id",as: "countries"
+                                }
+                        }
+                    ]
+                ).toArray(function (err, result) {
+                    if (err) {
+                        console.log(err.message)
+                        reject(err)
+                    }
+                    resolve(result)
+                })
+            })
+        },
+
+
     }
 
 }

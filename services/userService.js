@@ -7,7 +7,7 @@ module.exports = function (app) {
                 console.log("createUser is called")
                 var user = {
                     fullname: parameters.fullname,
-                    country: parameters.country
+                    country: parameters.country,
                     create_date: new Date()
                 }
                 app.get('mongodb').db("packcarrydrive").collection("user").insert(user, {w: 1}, function(err, records){

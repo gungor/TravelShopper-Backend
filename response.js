@@ -37,6 +37,10 @@ module.exports = {
 
     sendCreateItemSuccessResponse: response => {
         response.send(JSON.stringify( {code: "0" , msg : "Success"} , null, 3))
+    },
+
+    sendQueryItemsSuccessResponse : (response,result ) => {
+        response.send(JSON.stringify( {code: "0" , msg : "Success", items: result} , null, 3))
     }
 
 
